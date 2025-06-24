@@ -4,117 +4,129 @@
   <meta charset="UTF-8" />
   <title>Nahomi Cardenas</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      background: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #111 0%, #222 100%);
+      color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
       padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #00e0ff;
+      margin-bottom: 30px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin: 15px 0 5px;
     }
     input, button {
       width: 100%;
-      padding: 10px;
-      margin: 10px 0;
+      padding: 12px;
       font-size: 16px;
-      box-sizing: border-box;
+      border-radius: 10px;
     }
     input {
-      background: #333;
-      color: #ccc;
-      border: 1px solid #555;
+      background: #222;
+      color: #eee;
+      border: 1px solid #444;
     }
     input[readonly] {
       cursor: not-allowed;
     }
     button {
-      background-color: #00c0ff;
+      margin-top: 20px;
+      background: linear-gradient(to right, #00c0ff, #00ff88);
       color: #000;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
       font-weight: bold;
+      border: none;
+      transition: background 0.3s ease;
     }
     button:hover {
-      background-color: #00a0dd;
+      background: linear-gradient(to right, #00a0dd, #00dd88);
     }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
+    .card {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 255, 200, 0.1);
+      margin-top: 30px;
+    }
+    .result {
+      font-size: 18px;
+      line-height: 1.6;
     }
     .progress-container {
-      background: #222;
+      background: #333;
       border-radius: 20px;
       height: 40px;
-      margin-top: 20px;
       overflow: hidden;
+      margin-top: 25px;
       box-shadow: inset 0 0 8px #000;
-      position: relative;
     }
     .progress-bar {
       height: 100%;
-      width: 0;
+      width: 0%;
       background: linear-gradient(90deg, #00ff88, #00c0ff);
-      transition: width 1s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #000;
       font-weight: bold;
-      font-size: 16px;
-      white-space: nowrap;
+      color: #000;
+      transition: width 0.8s ease-in-out;
     }
-    .result {
-      margin-top: 20px;
-      font-size: 18px;
-      background: #222;
-      padding: 15px;
-      border-radius: 8px;
-    }
-    .comparativa {
-      margin-top: 40px;
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-    }
-    .comparativa h2 {
-      color: #00ff88;
-      margin-bottom: 15px;
-    }
-    .comparativa table {
+    table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 20px;
     }
-    .comparativa th, .comparativa td {
-      padding: 10px;
-      border-bottom: 1px solid #444;
+    th, td {
+      padding: 12px 10px;
       text-align: left;
     }
-    .comparativa th {
-      color: #00c0ff;
+    th {
+      background-color: #222;
+      color: #00e0ff;
+      font-weight: bold;
+      border-bottom: 2px solid #00ff88;
     }
-    .comparativa tr:last-child td {
-      border-bottom: none;
+    tr:nth-child(even) {
+      background-color: #1e1e1e;
+    }
+    tr:hover {
+      background-color: #2a2a2a;
+    }
+    .comparativa h2 {
+      margin-bottom: 10px;
+      color: #00ff88;
     }
   </style>
 </head>
 <body>
+
   <h1>Nahomi Cardenas</h1>
 
-  <label>Monto de Inversión (MXN):</label>
-  <input type="number" id="monto" value="3100" readonly />
+  <div class="card">
+    <label>Monto de Inversión (MXN):</label>
+    <input type="number" id="monto" value="3100" readonly />
 
-  <label>Fecha de Inicio:</label>
-  <input type="date" id="fechaInicio" value="2025-01-01" readonly />
+    <label>Fecha de Inicio:</label>
+    <input type="date" id="fechaInicio" value="2025-01-01" readonly />
 
-  <button onclick="calcular()">Calcular</button>
+    <button onclick="calcular()">Calcular</button>
 
-  <div class="result" id="resultado"></div>
+    <div class="result" id="resultado"></div>
 
-  <div class="progress-container">
-    <div class="progress-bar" id="barra">0% - $0.00 MXN</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="barra">0% - $0.00 MXN</div>
+    </div>
   </div>
 
-  <div class="comparativa">
+  <div class="card comparativa">
     <h2>Comparativa con otros instrumentos (12 meses)</h2>
     <table>
       <thead>
@@ -123,66 +135,79 @@
           <th>Tasa Anual</th>
           <th>Ganancia Estimada</th>
           <th>Total Final</th>
+          <th>Tiempo para duplicar</th>
         </tr>
       </thead>
       <tbody id="tabla-comparativa"></tbody>
     </table>
   </div>
 
-<script>
-  function calcular() {
-    const monto = 3100;
-    const fechaInicio = new Date(document.getElementById("fechaInicio").value);
-    const hoy = new Date();
-    const diasTotales = 365;
-    const diasTranscurridos = Math.min(Math.max((hoy - fechaInicio) / (1000 * 60 * 60 * 24), 0), diasTotales);
-    const progreso = (diasTranscurridos / diasTotales) * 100;
+  <script>
+    async function getDatos() {
+      return {
+        cuentaAhorro: 0.1262,
+        cetes: 0.081,
+        mercadoPago: 0.10,
+        oro: 0.2722,
+        plata: 0.22,
+        sp500: 0.2330,
+        bitcoin: 1.20
+      };
+    }
 
-    // Simulación interés simple 100%
-    const tiempoAnios = diasTranscurridos / 365;
-    const tasaSimulacion = 1.0;
-    const gananciaSimulacion = monto * tasaSimulacion * tiempoAnios;
-    const totalSimulacion = monto + gananciaSimulacion;
+    async function calcular() {
+      const datos = await getDatos();
+      const monto = 3100;
+      const fechaInicio = new Date(document.getElementById("fechaInicio").value);
+      const hoy = new Date();
+      const diasTotales = 365;
+      const diasTranscurridos = Math.min(Math.max((hoy - fechaInicio) / (1000 * 60 * 60 * 24), 0), diasTotales);
+      const progreso = (diasTranscurridos / diasTotales) * 100;
+      const tiempoAnios = diasTranscurridos / 365;
+      const tasaSimulacion = 1.0;
+      const gananciaSimulacion = monto * tasaSimulacion * tiempoAnios;
+      const totalSimulacion = monto + gananciaSimulacion;
 
-    document.getElementById("resultado").innerHTML = `
-      <strong>Fecha final:</strong> ${new Date(fechaInicio.getFullYear() + 1, fechaInicio.getMonth(), fechaInicio.getDate()).toLocaleDateString()}<br>
-      <strong>Ganancia estimada hasta hoy:</strong> $${gananciaSimulacion.toFixed(2)} MXN<br>
-      <strong>Total acumulado:</strong> $${totalSimulacion.toFixed(2)} MXN<br>
-      <strong>Progreso:</strong> ${progreso.toFixed(1)}%
-    `;
-
-    const barra = document.getElementById("barra");
-    barra.style.width = `${progreso}%`;
-    barra.textContent = `${progreso.toFixed(1)}% - $${totalSimulacion.toFixed(2)} MXN`;
-
-    // Tasas anuales aproximadas reales
-    const instrumentos = [
-      { nombre: "Cuenta de ahorro", tasa: 0.03 },
-      { nombre: "CETES", tasa: 0.09 },
-      { nombre: "Mercado Pago", tasa: 0.10 },
-      { nombre: "Oro", tasa: 0.055 },
-      { nombre: "Plata", tasa: 0.12 },
-      { nombre: "S&P 500 (SPY)", tasa: 0.2502 },
-      { nombre: "Bitcoin", tasa: 1.22 },
-      { nombre: "Esta simulación", tasa: tasaSimulacion }
-    ];
-
-    const tbody = document.getElementById("tabla-comparativa");
-    tbody.innerHTML = "";
-
-    instrumentos.forEach(({ nombre, tasa }) => {
-      const ganancia = monto * tasa;
-      const total = monto + ganancia;
-      tbody.innerHTML += `
-        <tr>
-          <td>${nombre}</td>
-          <td>${(tasa * 100).toFixed(2)}%</td>
-          <td>$${ganancia.toFixed(2)}</td>
-          <td>$${total.toFixed(2)}</td>
-        </tr>
+      document.getElementById("resultado").innerHTML = `
+        <strong>Fecha final:</strong> ${new Date(fechaInicio.getFullYear() + 1, fechaInicio.getMonth(), fechaInicio.getDate()).toLocaleDateString()}<br>
+        <strong>Ganancia estimada hasta hoy:</strong> $${gananciaSimulacion.toFixed(2)} MXN<br>
+        <strong>Total acumulado:</strong> $${totalSimulacion.toFixed(2)} MXN<br>
+        <strong>Progreso:</strong> ${progreso.toFixed(1)}%
       `;
-    });
-  }
-</script>
+
+      const barra = document.getElementById("barra");
+      barra.style.width = `${progreso}%`;
+      barra.textContent = `${progreso.toFixed(1)}% - $${totalSimulacion.toFixed(2)} MXN`;
+
+      const instrumentos = [
+        { nombre: "Cuenta de ahorro (Nu)", tasa: datos.cuentaAhorro },
+        { nombre: "CETES (1 mes)", tasa: datos.cetes },
+        { nombre: "Mercado Pago", tasa: datos.mercadoPago },
+        { nombre: "Oro (2024)", tasa: datos.oro },
+        { nombre: "Plata (2024)", tasa: datos.plata },
+        { nombre: "S&P 500 (2024)", tasa: datos.sp500 },
+        { nombre: "Bitcoin (2024)", tasa: datos.bitcoin },
+        { nombre: "Esta simulación", tasa: tasaSimulacion }
+      ];
+
+      const tbody = document.getElementById("tabla-comparativa");
+      tbody.innerHTML = "";
+
+      instrumentos.forEach(({ nombre, tasa }) => {
+        const ganancia = monto * tasa;
+        const total = monto + ganancia;
+        const duplicacion = tasa > 0 ? (1 / tasa).toFixed(2) + " años" : "∞";
+        tbody.innerHTML += `
+          <tr>
+            <td>${nombre}</td>
+            <td>${(tasa * 100).toFixed(2)}%</td>
+            <td>$${ganancia.toFixed(2)}</td>
+            <td>$${total.toFixed(2)}</td>
+            <td>${duplicacion}</td>
+          </tr>
+        `;
+      });
+    }
+  </script>
 </body>
 </html>
